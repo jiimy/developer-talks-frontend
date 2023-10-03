@@ -36,23 +36,29 @@ const BoardDetail = ({ type }) => {
   const [checkStatus, setCheckStatus] = useState([]);
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [modalReport, setModalReport] = useState(false);
+  const [errMessage, setErrMessage] = useState('');
 
   const fetchPost = async (type, postId) => {
-    const response = await axios.get(`${ROOT_API}/${type}/${postId}`, {
-      headers: {
-        "Content-Type": "application/json",
-        "X-AUTH-TOKEN": auth.accessToken,
-      },
-    });
+    const response = await axios
+      .get(`${ROOT_API}/${type}/${postId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-AUTH-TOKEN": auth.accessToken,
+        },
+      })
+      .catch((err) => {
+        if (err.response.status === 404) {
+          setErrMessage(err.response.data.message);
+        }
+      });
     let cnt = 0;
     response.data.imagedContent = response.data.content.replace(/<img>/g, (match, capture) => {
       return `<img src=${response.data.imageUrls[cnt++]} />`;
     });
     setPost(response.data);
-    console.log(response.data);
   };
 
-  const { isLoading, isError } = useQuery(["boardDetail"], () => fetchPost(type, postId));
+  const { isLoading, isError, error } = useQuery(["boardDetail"], () => fetchPost(type, postId));
 
   useEffect(() => {
     if (auth.accessToken !== null) {
@@ -87,114 +93,116 @@ const BoardDetail = ({ type }) => {
   });
 
   if (isLoading) return <div>loading...</div>;
-  if (isError) return <div>error...</div>;
+  // if (isError) return <div>error...</div>;
+  if (errMessage) return <div>{errMessage}</div>;
+    // console.log("error", error, isError);
 
-  return (
-    <ErrorBoundary FallbackComponent={ErrorCallback}>
-      <div className={s.container}>
-        <header>
-          <div className={s.userInfoContainer}>
-            {post.userInfo.userProfile !== null ? (
-              <img className={s.profile} src={post.userInfo.userProfile} alt="프로필 이미지" />
-            ) : (
-              <Gravatar email={post.userInfo.nickname} className={s.profile} />
-            )}
-            <div>
-              {/*NOTE 닉네임 클릭 시 유저정보 */}
-              <ShowUserInfo userinfo={post.userInfo} type="detail" />
-              <div className={s.info}>
-                <span>{post.createDate}&nbsp;&nbsp;&nbsp;</span>
-                <span>조회수 {post.viewCount}</span>
-                {auth.accessToken && (
-                  <RiAlarmWarningFill className={s.report} onClick={() => setModalReport(!modalReport)} />
-                )}
+    return (
+      <ErrorBoundary FallbackComponent={ErrorCallback}>
+        <div className={s.container}>
+          <header>
+            <div className={s.userInfoContainer}>
+              {post.userInfo.userProfile !== null ? (
+                <img className={s.profile} src={post.userInfo.userProfile} alt="프로필 이미지" />
+              ) : (
+                <Gravatar email={post.userInfo.nickname} className={s.profile} />
+              )}
+              <div>
+                {/*NOTE 닉네임 클릭 시 유저정보 */}
+                <ShowUserInfo userinfo={post.userInfo} type="detail" />
+                <div className={s.info}>
+                  <span>{post.createDate}&nbsp;&nbsp;&nbsp;</span>
+                  <span>조회수 {post.viewCount}</span>
+                  {auth.accessToken && (
+                    <RiAlarmWarningFill className={s.report} onClick={() => setModalReport(!modalReport)} />
+                  )}
+                </div>
               </div>
             </div>
+            <p className={s.title}>{post.title}</p>
+            {nickname === post.userInfo.nickname && (
+              <div className={s.button_wrap}>
+                <Button onClick={clickUpdate} size="small" theme="success">
+                  수정
+                </Button>
+                {post.commentCount === 0 ? (
+                  <Button onClick={deletePost} size="small" theme="cancle">
+                    삭제
+                  </Button>
+                ) : (
+                  <Button
+                    classname={s.btnCancle}
+                    onClick={() => {
+                      toast.error("댓글이 있는 게시글은 삭제가 불가능합니다.");
+                    }}
+                    size="small"
+                  >
+                    삭제
+                  </Button>
+                )}
+              </div>
+            )}
+          </header>
+          <main>
+            {/* TODO: content 내용 이슈 */}
+            <div className={s.content} dangerouslySetInnerHTML={{ __html: post.imagedContent }}></div>
+          </main>
+          <div className={s.countContainer}>
+            <BoardCount
+              ttype={type}
+              type={"favorite"}
+              token={auth.accessToken}
+              isOwner={nickname === post.userInfo.nickname}
+              checkStatus={checkStatus}
+              setCheckStatus={setCheckStatus}
+              postId={post.id}
+              setPost={setPost}
+            >
+              <AiOutlineStar />
+              <span>{post.favoriteCount}</span>
+            </BoardCount>
+
+            <BoardCount
+              ttype={type}
+              type={"recommend"}
+              token={auth.accessToken}
+              isOwner={nickname === post.userInfo.nickname}
+              checkStatus={checkStatus}
+              setCheckStatus={setCheckStatus}
+              postId={post.id}
+              setPost={setPost}
+            >
+              <FiThumbsUp />
+              <span>{post.recommendCount}</span>
+            </BoardCount>
           </div>
-          <p className={s.title}>{post.title}</p>
-          {nickname === post.userInfo.nickname && (
-            <div className={s.button_wrap}>
-              <Button onClick={clickUpdate} size="small" theme="success">
-                수정
-              </Button>
-              {post.commentCount === 0 ? (
-                <Button onClick={deletePost} size="small" theme="cancle">
-                  삭제
-                </Button>
-              ) : (
-                <Button
-                  classname={s.btnCancle}
-                  onClick={() => {
-                    toast.error("댓글이 있는 게시글은 삭제가 불가능합니다.");
-                  }}
-                  size="small"
-                >
-                  삭제
-                </Button>
-              )}
-            </div>
+
+          {type === "post" ? (
+            <ReplyList nickname={nickname} replyCnt={post.commentCount} />
+          ) : (
+            <AnswerList
+              nickname={nickname}
+              answerCnt={post.commentCount}
+              qnaNick={post.userInfo.nickname}
+              selectAnswer={post.selectAnswer}
+            />
           )}
-        </header>
-        <main>
-          {/* TODO: content 내용 이슈 */}
-          <div className={s.content} dangerouslySetInnerHTML={{ __html: post.imagedContent }}></div>
-        </main>
-        <div className={s.countContainer}>
-          <BoardCount
-            ttype={type}
-            type={"favorite"}
-            token={auth.accessToken}
-            isOwner={nickname === post.userInfo.nickname}
-            checkStatus={checkStatus}
-            setCheckStatus={setCheckStatus}
-            postId={post.id}
-            setPost={setPost}
-          >
-            <AiOutlineStar />
-            <span>{post.favoriteCount}</span>
-          </BoardCount>
-
-          <BoardCount
-            ttype={type}
-            type={"recommend"}
-            token={auth.accessToken}
-            isOwner={nickname === post.userInfo.nickname}
-            checkStatus={checkStatus}
-            setCheckStatus={setCheckStatus}
-            postId={post.id}
-            setPost={setPost}
-          >
-            <FiThumbsUp />
-            <span>{post.recommendCount}</span>
-          </BoardCount>
         </div>
-
-        {type === "post" ? (
-          <ReplyList nickname={nickname} replyCnt={post.commentCount} />
-        ) : (
-          <AnswerList
-            nickname={nickname}
-            answerCnt={post.commentCount}
-            qnaNick={post.userInfo.nickname}
-            selectAnswer={post.selectAnswer}
-          />
+        {modalReport && (
+          <MessageModal
+            setOnModal={() => setModalReport()}
+            dimClick={() => false}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <Modal.Content>
+              <ReportModal setOnModal={setModalReport} type="board" postId={postId}></ReportModal>
+            </Modal.Content>
+          </MessageModal>
         )}
-      </div>
-      {modalReport && (
-        <MessageModal
-          setOnModal={() => setModalReport()}
-          dimClick={() => false}
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <Modal.Content>
-            <ReportModal setOnModal={setModalReport} type="board" postId={postId}></ReportModal>
-          </Modal.Content>
-        </MessageModal>
-      )}
-    </ErrorBoundary>
-  );
+      </ErrorBoundary>
+    );
 };
 
 export default BoardDetail;
