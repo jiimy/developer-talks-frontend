@@ -15,9 +15,9 @@ const SearchInput = ({ type, placeholder = "글 제목, 글 내용 검색" }) =>
 
   useEffect(() => {
     if (type === "post") {
-      setGetType("board");
+      setGetType("post");
     } else if (type === "questions") {
-      setGetType("qna");
+      setGetType("questions");
     } else if (type === "studyroom") {
       setGetType("studyroom");
     }
