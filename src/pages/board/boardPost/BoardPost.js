@@ -23,7 +23,7 @@ export default function BoardPost({ type }) {
   useEffect(() => {
     switch (type) {
       case "post":
-        setGetType("board");
+        setGetType("post");
         break;
       case "questions":
         setGetType("qna");
@@ -48,19 +48,23 @@ export default function BoardPost({ type }) {
       return;
     }
     await new Promise((r) => setTimeout(r, 1000));
-    // console.log(`
-    //         제목: ${form.title}
-    //         내용: ${form.content}
-    //         이미지 : ${form.files}
-    //     `);
+
+    const fieldsToAppend = {
+      title: form.title,
+      content: form.content,
+    };
+
     const frm = new FormData();
     if (form.files.length !== 0) {
       form.files.forEach((file) => {
         frm.append("files", file);
       });
     }
-    frm.append("title", form.title);
-    frm.append("content", form.content);
+
+    for (const field in fieldsToAppend) {
+      console.log("form :", field, fieldsToAppend);
+      frm.append(field, fieldsToAppend[field]);
+    }
 
     const res = postBoard(type, frm);
     res
