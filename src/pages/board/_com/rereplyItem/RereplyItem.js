@@ -145,17 +145,29 @@ const RereplyItem = ({ rr, postId }) => {
                     />{" "}
                     시크릿 댓글
                   </label>
-                  <Button classname={s.cancle} theme="outline" color="#9ca3af" size="medium" onClick={handleUpdateCancle}>
+                  <Button
+                    classname={s.cancle}
+                    theme="outline"
+                    color="#9ca3af"
+                    size="medium"
+                    onClick={handleUpdateCancle}
+                  >
                     취소
                   </Button>
-                  <Button size="medium">수정</Button>
+                  <Button size="medium" onClick={handleUpdatePost}>
+                    수정
+                  </Button>
                 </div>
               </div>
             </form>
           ) : (
             <>
               <div className={s.tagContentName}>@{rr.parentNickname}</div>
-              <div className={s.content} dangerouslySetInnerHTML={{ __html: rr.content }} onClick={handlePostClick}></div>
+              <div
+                className={s.content}
+                dangerouslySetInnerHTML={{ __html: rr.content }}
+                onClick={handlePostClick}
+              ></div>
             </>
           )}
 

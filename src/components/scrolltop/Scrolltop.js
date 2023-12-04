@@ -1,17 +1,15 @@
-import { useEffect, useState } from 'react';
-import './Scrolltop.scss';
+import { useEffect, useState } from "react";
+import "./Scrolltop.scss";
 
 function Scrolltop() {
-  const isScrollAtBottom =
-    window.scrollY + window.innerHeight >=
-    document.documentElement.scrollHeight;
+  const isScrollAtBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight;
 
   const [showButton, setShowButton] = useState(false);
   const scrollToBottom = () => {
     //아래
     window.scroll({
       top: document.documentElement.scrollHeight,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
@@ -19,7 +17,7 @@ function Scrolltop() {
     //위
     window.scroll({
       top: 0,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
@@ -31,32 +29,33 @@ function Scrolltop() {
         setShowButton(false);
       }
     };
-    window.addEventListener('scroll', handleShowButton);
+    window.addEventListener("scroll", handleShowButton);
     return () => {
-      window.removeEventListener('scroll', handleShowButton);
+      window.removeEventListener("scroll", handleShowButton);
     };
   }, []);
 
-  return showButton ? (
-    <div className="scroll__container">
-      <button id="top" onClick={scrollToTop} type="button">
-        {' '}
-        Top
-      </button>
-    </div>
-  ) : (
-    <div
-      className={
-        window.scrollY < 50 && isScrollAtBottom < 50
-          ? 'scroll__none'
-          : 'scroll__container'
-      }
-    >
-      <button id="bottom" onClick={scrollToBottom} type="button">
-        {' '}
-        Bottom
-      </button>
-    </div>
+  return (
+    showButton && (
+      <div className="scroll__container">
+        <button id="top" onClick={scrollToTop} type="button">
+          {" "}
+          Top
+        </button>
+      </div>
+    )
   );
+  // <div
+  //   className={
+  //     window.scrollY < 50 && isScrollAtBottom < 50
+  //       ? 'scroll__none'
+  //       : 'scroll__container'
+  //   }
+  // >
+  //   <button id="bottom" onClick={scrollToBottom} type="button">
+  //     {' '}
+  //     Bottom
+  //   </button>
+  // </div>
 }
 export default Scrolltop;

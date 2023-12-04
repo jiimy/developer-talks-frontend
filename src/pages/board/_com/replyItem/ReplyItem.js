@@ -81,7 +81,9 @@ const ReplyItem = ({ postId, reply }) => {
     },
   });
 
+  // 대댓글
   const handleRePost = (e) => {
+    console.log("클릭");
     e.preventDefault();
     const newComment = {
       content: reForm.content,
@@ -134,7 +136,7 @@ const ReplyItem = ({ postId, reply }) => {
           className={s.container}
           to={`/post/${postId}/#${reply.id}`}
           smooth
-          activeStyle={{ fontWeight: "bold", color: "#ff0000" }}
+          // activeStyle={{ fontWeight: "bold", color: "#ff0000" }}
         >
           <div className={s.info}>
             {reply.userInfo.userProfile !== null ? (
@@ -242,7 +244,9 @@ const ReplyItem = ({ postId, reply }) => {
                     >
                       취소
                     </Button>
-                    <Button size="medium">등록</Button>
+                    <Button size="medium" type="submit" onClick={handleRePost}>
+                      등록
+                    </Button>
                   </div>
                   {/* </div> */}
                 </form>
