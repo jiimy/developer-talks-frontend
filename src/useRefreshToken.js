@@ -22,9 +22,9 @@ export default function useRefreshToken() {
       // atk 가 없고, rtk 가 있을 때 - 최초 1회 로그인 후 로그아웃 안했을 때
       if (auth.accessToken === null && getCookie("dtrtk") !== undefined) {
         // atrk 가 없고, rtk가 있지만 rtk의 만료시간이 현재 시간보다 이전일때
-        console.log("현재날짜가 만료시간보다 이전임 : ", epochConvert(parseJwt(getCookie("dtrtk").exp)));
+        // console.log("현재날짜가 만료시간보다 이전임 : ", epochConvert(parseJwt(getCookie("dtrtk").exp)));
 
-        console.log("소셜로그인이 아닐때");
+        // console.log("소셜로그인이 아닐때");
         // NOTE: 일반로그인이고 토큰이 만료됬을때
         if (epochConvert(parseJwt(getCookie("dtrtk").exp))) {
           showToast("error", "회원 정보가 만료되었습니다.");

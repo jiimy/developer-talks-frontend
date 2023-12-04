@@ -14,7 +14,7 @@ import UserInfoList from "../userInfoList/UserInfoList";
 
 const Userside = () => {
   const nickname = useSelector((state) => state.userStore.nickname);
-  const [isActive, setIsActive] = useState("mypage");
+  const [isactive, setisactive] = useState("mypage");
   const [viewSide, setViewSide] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ const Userside = () => {
   //   inputName: "",
   // });
   const handleClick = (value) => {
-    setIsActive(value);
+    setisactive(value);
   };
 
   useEffect(() => {
@@ -59,7 +59,7 @@ const Userside = () => {
             </div>
             <ul className="nav">
               <li
-                className={classNames("", { "is-active": isActive === "mypage" })}
+                className={classNames("", { "is-active": isactive === "mypage" })}
                 onClick={() => {
                   handleClick("mypage");
                   navigate("/user/activity");
@@ -68,7 +68,7 @@ const Userside = () => {
                 활동내역
               </li>
               <li
-                className={classNames("", { "is-active": isActive === "my-studyroom" })}
+                className={classNames("", { "is-active": isactive === "my-studyroom" })}
                 onClick={() => {
                   handleClick("my-studyroom");
                   navigate("/user/my-studyrooms");
@@ -77,7 +77,7 @@ const Userside = () => {
                 스터디룸
               </li>
               <li
-                className={classNames("", { "is-active": isActive === "my-message" })}
+                className={classNames("", { "is-active": isactive === "my-message" })}
                 onClick={() => {
                   handleClick("my-message");
                   navigate("/user/my-message");
@@ -86,7 +86,7 @@ const Userside = () => {
                 쪽지
               </li>
               <li
-                className={classNames("", { "is-active": isActive === "account" })}
+                className={classNames("", { "is-active": isactive === "account" })}
                 onClick={() => {
                   handleClick("account");
                   navigate("/user/account");
@@ -99,10 +99,10 @@ const Userside = () => {
           </section>
         )
       }
-      <>{isActive === "mypage" && <UserInfoList user={location.state} />}</>
-      <>{isActive === "my-studyroom" && <MyStudyRoom />}</>
-      <>{isActive === "my-message" && <MyMessage />}</>
-      <>{isActive === "account" && <Account />}</>
+      <>{isactive === "mypage" && <UserInfoList user={location.state} />}</>
+      <>{isactive === "my-studyroom" && <MyStudyRoom />}</>
+      <>{isactive === "my-message" && <MyMessage />}</>
+      <>{isactive === "account" && <Account />}</>
     </MypageContent>
   );
 };

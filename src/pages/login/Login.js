@@ -32,7 +32,7 @@ const Login = () => {
     const res = login(data);
     res
       .then((res) => {
-        console.log("로그인 성공:", res);
+        // console.log("로그인 성공:", res);
         // setRefreshToken({ refreshToken: response.data.refreshToken });
         const today = new Date(); //추가
         today.setDate(today.getDate() + 7);
